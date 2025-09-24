@@ -2,6 +2,7 @@
 
 const KEY = "scholar_db";
 const $ = (id) => document.getElementById(id);
+
 const setStatus = (txt) => {
   $("status").textContent = txt;
 };
@@ -16,6 +17,11 @@ function isScholarAuthorUrl(u) {
   } catch {
     return false;
   }
+}
+
+async function showCurrentCount() {
+  const db = await loadDb();
+  setStatus(`Current records: ${db.length}`);
 }
 
 async function sendOrInject(tabId, message) {
@@ -152,8 +158,10 @@ $("btn-scan").addEventListener("click", async () => {
     const merged = mergeRows(db, fresh);
     await saveDb(merged);
     setStatus(`Updated database: +${fresh.length} (total ${merged.length})`);
+    setTimeout(showCurrentCount, 1500);
   } catch (e) {
     setStatus("Error: " + e.message);
+    setTimeout(showCurrentCount, 1500);
   }
 });
 
@@ -162,6 +170,7 @@ $("btn-download").addEventListener("click", async () => {
     const db = await loadDb();
     if (db.length === 0) {
       setStatus("Nothing to download. Please Scan first.");
+      setTimeout(showCurrentCount, 1500);
       return;
     }
     const csv = toCsv(db);
@@ -173,8 +182,10 @@ $("btn-download").addEventListener("click", async () => {
       saveAs: true,
     });
     setStatus("CSV downloaded.");
+    setTimeout(showCurrentCount, 1500);
   } catch (e) {
     setStatus("Error: " + e.message);
+    setTimeout(showCurrentCount, 1500);
   }
 });
 
@@ -183,15 +194,34 @@ $("btn-import").addEventListener("click", async () => {
     const file = $("file-import").files?.[0];
     if (!file) {
       setStatus("Choose a CSV first.");
+      setTimeout(showCurrentCount, 1500);
       return;
     }
     const text = await file.text();
     const rows = parseCsv(text);
-    const db = await loadDb();
-    const merged = mergeRows(db, rows);
-    await saveDb(merged);
-    setStatus(`Imported ${rows.length} rows. Total ${merged.length}.`);
+    await saveDb(rows);
+    setStatus(`Imported ${rows.length} rows. Database overwritten.`);
+    // const db = await loadDb();
+    // const merged = mergeRows(db, rows);
+    // await saveDb(merged);
+    // setStatus(`Imported ${rows.length} rows. Total ${merged.length}.`);
+    setTimeout(showCurrentCount, 1500);
   } catch (e) {
     setStatus("Error: " + e.message);
   }
+});
+
+$("btn-clear").addEventListener("click", async () => {
+  try {
+    await chrome.storage.local.remove(KEY);
+    setStatus("All records cleared.");
+    setTimeout(showCurrentCount, 1500);
+  } catch (e) {
+    setStatus("Error clearing: " + e.message);
+    setTimeout(showCurrentCount, 1500);
+  }
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  showCurrentCount();
 });

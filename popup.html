@@ -15,9 +15,18 @@
         <button id="btn-download">Download CSV</button>
     </div>
 
+    <hr class="divider">
+
     <div class="row">
-        <input type="file" id="file-import" accept=".csv" />
+        <label for="file-import" class="file-label">Choose CSV to Import</label>
+        <input type="file" id="file-import" accept=".csv" style="display:none" />
         <button id="btn-import">Import CSV</button>
+    </div>
+
+    <hr class="divider">
+
+    <div class="row">
+        <button id="btn-clear">Clear Records</button>
     </div>
 
     <p id="status"></p>
