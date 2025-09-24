@@ -1,0 +1,20 @@
+{
+    "manifest_version": 3,
+    "name": "Scholar Profile Scraper",
+    "version": "1.0.0",
+    "description": "Scrape Google Scholar author pages into a CSV with auto pagination and merging.",
+    "permissions": ["storage", "downloads", "scripting", "activeTab"],
+    "host_permissions": ["*://*/citations*"],
+    "action": {
+        "default_title": "Scholar Scraper",
+        "default_popup": "popup.html"
+    },
+    "icons": {
+        "128": "icon128.png"
+    },
+    "content_scripts": [{
+        "matches": ["*://*/citations*"],
+        "js": ["content.js"],
+        "run_at": "document_idle"
+    }]
+}
